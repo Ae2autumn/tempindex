@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生日快乐！</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s;
+        }
+        
+        .active {
+            display: flex;
+        }
+        
+        /* 首页样式 */
+        #home-screen {
+            background-color: #000;
+        }
+        
+        .click-hint {
+            position: absolute;
+            bottom: 20%;
+            font-size: 1.2rem;
+            color: #fff;
+            animation: blink 2s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        
+        .countdown {
+            font-size: 5rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px #ff4081;
+        }
+        
+        /* 烟花样式 */
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        /* 弹窗样式 */
+        .popup {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #ff4081;
+            padding: 2rem;
+            border-radius: 15px;
+            font-size: 3rem;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(255, 64, 129, 0.7);
+            z-index: 100;
+            animation: popup 0.5s ease-out;
+        }
+        
+        @keyframes popup {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* 愿望输入界面 */
+        #wish-screen {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        }
+        
+        .wish-input {
+            width: 80%;
+            max-width: 500px;
+            height: 150px;
+            padding: 1rem;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            margin-bottom: 2rem;
+            resize: none;
+        }
+        
+        .wish-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .btn {
+            padding: 0.8rem 2rem;
+            font-size: 1.2rem;
+            background-color: #ff4081;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(255, 64, 129, 0.4);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 64, 129, 0.6);
+        }
+        
+        /* 贺卡界面 */
+        #card-screen {
+            background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+            color: #333;
+        }
+        
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .balloon {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            border-radius: 50%;
+            animation: float 15s infinite linear;
+        }
+        
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 15px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); }
+            100% { transform: translateY(-100px) translateX(20px); }
+        }
+        
+        .card-text {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s;
+        }
+        
+        .card-text.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 照片墙界面 */
+        #photo-screen {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+        }
+        
+        .photo-container {
+            width: 80%;
+            max-width: 600px;
+            height: 400px;
+            position: relative;
+            perspective: 1000px;
+        }
+        
+        .photo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            transition: transform 0.8s;
+        }
+        
+        .photo img {
+            max-width: 80%;
+            max-height: 70%;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .photo-caption {
+            font-size: 1.2rem;
+            color: #333;
+            text-align: center;
+        }
+        
+        /* 猫猫互动界面 */
+        #cat-screen {
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+        
+        .cat-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cat-object {
+            width: 150px;
+            height: 150px;
+            margin: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .cat-object:hover {
+            transform: scale(1.1);
+        }
+        
+        .cake {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="20" y="40" width="60" height="40" fill="%23ff9a9e" rx="5"/><rect x="25" y="30" width="50" height="10" fill="%23fad0c4" rx="3"/><circle cx="35" cy="25" r="5" fill="%23ff4081"/><circle cx="50" cy="25" r="5" fill="%23ff4081"/><circle cx="65" cy="25" r="5" fill="%23ff4081"/></svg>') no-repeat center;
+        }
+        
+        .gift {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="25" y="40" width="50" height="40" fill="%23ff4081"/><rect x="25" y="40" width="50" height="10" fill="%23ff9a9e"/><rect x="45" y="20" width="10" height="60" fill="%23ff9a9e"/></svg>') no-repeat center;
+        }
+        
+        .cat-message {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+            min-height: 60px;
+            color: #333;
+        }
+        
+        .response-buttons {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .reject-btn {
+            background-color: #ccc;
+        }
+        
+        .crying-cat {
+            position: absolute;
+            bottom: 0;
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23f9d5e5"/><circle cx="35" cy="40" r="8" fill="%23333"/><circle cx="65" cy="40" r="8" fill="%23333"/><path d="M35,65 Q50,75 65,65" stroke="%23333" stroke-width="3" fill="none"/><path d="M40,70 L30,85" stroke="%23333" stroke-width="3" fill="none"/><path d="M60,70 L70,85" stroke="%23333" stroke-width="3" fill="none"/></svg>') no-repeat center;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        
+        /* 最终界面 */
+        #final-screen {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        }
+        
+        .heart-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ff4081" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>') no-repeat center;
+            background-size: contain;
+            opacity: 0;
+            animation: heart-float 8s linear infinite;
+        }
+        
+        @keyframes heart-float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .final-text {
+            font-size: 2rem;
+            text-align: center;
+            max-width: 80%;
+            color: #333;
+        }
+        
+        .final-line {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s;
+            margin-bottom: 1rem;
+        }
+        
+        .final-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Loading 样式 */
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .loading.active {
+            display: flex;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ff4081;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 首页 -->
+    <div id="home-screen" class="screen active">
+        <div class="countdown">5</div>
+        <div class="click-hint">点击屏幕开始倒计时</div>
+    </div>
+
+    <!-- 愿望输入界面 -->
+    <div id="wish-screen" class="screen">
+        <h1>许个愿望吧</h1>
+        <textarea class="wish-input" placeholder="在这里写下你的生日愿望..."></textarea>
+        <button class="btn" id="wish-btn">写好了</button>
+    </div>
+
+    <!-- 贺卡界面 -->
+    <div id="card-screen" class="screen">
+        <div class="card">
+            <div class="card-text" id="card-line1">亲爱的朋友，</div>
+            <div class="card-text" id="card-line2">在这个特别的日子里，</div>
+            <div class="card-text" id="card-line3">我想对你说：</div>
+            <div class="card-text" id="card-line4">生日快乐！</div>
+            <div class="card-text" id="card-line5">愿你的每一天都充满阳光和欢笑。</div>
+            <button class="btn" id="card-continue" style="display: none;">Continue</button>
+        </div>
+    </div>
+
+    <!-- 照片墙界面 -->
+    <div id="photo-screen" class="screen">
+        <div class="photo-container">
+            <div class="photo active-photo" id="photo1">
+                <div style="width: 200px; height: 150px; background: #ff9a9e; border-radius: 5px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.2rem;">美好回忆 #1</div>
+                <div class="photo-caption">这是我们第一次相遇的地方</div>
+            </div>
+            <div class="photo" id="photo2">
+                <div style="width: 200px; height: 150px; background: #a1c4fd; border-radius: 5px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.2rem;">美好回忆 #2</div>
+                <div class="photo-caption">一起度过的快乐时光</div>
+            </div>
+            <div class="photo" id="photo3">
+                <div style="width: 200px; height: 150px; background: #ffd3b6; border-radius: 5px; display: flex; justify-content: center; align-items: center; color: white; font-size: 1.2rem;">美好回忆 #3</div>
+                <div class="photo-caption">那些难忘的瞬间</div>
+            </div>
+        </div>
+        <button class="btn" id="photo-continue" style="display: none; margin-top: 2rem;">Continue</button>
+    </div>
+
+    <!-- 猫猫互动界面 -->
+    <div id="cat-screen" class="screen">
+        <div class="cat-container">
+            <div class="cat-message">点击蛋糕或礼物盒看看会发生什么</div>
+            <div class="cat-object cake" id="cake"></div>
+            <div class="cat-object gift" id="gift"></div>
+            <div class="response-buttons" id="response-buttons" style="display: none;">
+                <button class="btn" id="accept-btn">接受</button>
+                <button class="btn reject-btn" id="reject-btn">拒绝</button>
+            </div>
+            <div class="crying-cat" id="crying-cat"></div>
+        </div>
+    </div>
+
+    <!-- 最终界面 -->
+    <div id="final-screen" class="screen">
+        <div class="heart-bg" id="heart-bg"></div>
+        <div class="final-text">
+            <div class="final-line" id="final-line1">感谢你陪我度过这个特别的日子</div>
+            <div class="final-line" id="final-line2">愿我们的友谊长存</div>
+            <div class="final-line" id="final-line3">祝你生日快乐，永远快乐！</div>
+            <div class="final-line" id="final-line4">❤️</div>
+        </div>
+    </div>
+
+    <!-- Loading 界面 -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentScreen = 0;
+        const screens = [
+            'home-screen',
+            'wish-screen',
+            'card-screen',
+            'photo-screen',
+            'cat-screen',
+            'final-screen'
+        ];
+        
+        // 切换屏幕函数
+        function showScreen(index) {
+            // 隐藏所有屏幕
+            screens.forEach(screen => {
+                document.getElementById(screen).classList.remove('active');
+            });
+            
+            // 显示当前屏幕
+            document.getElementById(screens[index]).classList.add('active');
+            currentScreen = index;
+        }
+        
+        // 显示加载界面
+        function showLoading(duration) {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            
+            setTimeout(() => {
+                loading.classList.remove('active');
+            }, duration);
+        }
+        
+        // 首页逻辑
+        document.getElementById('home-screen').addEventListener('click', function() {
+            const countdownEl = document.querySelector('.countdown');
+            const clickHint = document.querySelector('.click-hint');
+            
+            // 隐藏提示
+            clickHint.style.display = 'none';
+            
+            // 开始倒计时
+            let count = 5;
+            const countdown = setInterval(() => {
+                countdownEl.textContent = count;
+                count--;
+                
+                if (count < 0) {
+                    clearInterval(countdown);
+                    
+                    // 创建烟花效果
+                    createFireworks(10000);
+                    
+                    // 显示生日快乐弹窗
+                    setTimeout(() => {
+                        const popup = document.createElement('div');
+                        popup.className = 'popup';
+                        popup.textContent = '生日快乐！';
+                        document.getElementById('home-screen').appendChild(popup);
+                        
+                        // 3秒后切换到愿望输入界面
+                        setTimeout(() => {
+                            popup.remove();
+                            showLoading(3000);
+                            setTimeout(() => {
+                                showScreen(1);
+                            }, 3000);
+                        }, 3000);
+                    }, 1000);
+                }
+            }, 1000);
+        });
+        
+        // 创建烟花效果
+        function createFireworks(duration) {
+            const colors = ['#ff4081', '#ff9a9e', '#a1c4fd', '#c2e9fb', '#ffd3b6'];
+            const endTime = Date.now() + duration;
+            
+            function createFirework() {
+                if (Date.now() > endTime) return;
+                
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = Math.random() * 100 + 'vw';
+                firework.style.top = Math.random() * 100 + 'vh';
+                firework.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                document.getElementById('home-screen').appendChild(firework);
+                
+                // 烟花爆炸效果
+                setTimeout(() => {
+                    const particles = 30;
+                    for (let i = 0; i < particles; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'firework';
+                        particle.style.left = firework.style.left;
+                        particle.style.top = firework.style.top;
+                        particle.style.backgroundColor = firework.style.backgroundColor;
+                        
+                        const angle = (i / particles) * Math.PI * 2;
+                        const distance = 50 + Math.random() * 100;
+                        const x = Math.cos(angle) * distance;
+                        const y = Math.sin(angle) * distance;
+                        
+                        document.getElementById('home-screen').appendChild(particle);
+                        
+                        // 粒子动画
+                        particle.animate([
+                            { transform: 'translate(0, 0)', opacity: 1 },
+                            { transform: `translate(${x}px, ${y}px)`, opacity: 0 }
+                        ], {
+                            duration: 1000 + Math.random() * 500,
+                            easing: 'cubic-bezier(0, .9, .57, 1)'
+                        }).onfinish = () => particle.remove();
+                    }
+                    
+                    firework.remove();
+                }, 500);
+                
+                // 创建下一个烟花
+                setTimeout(createFirework, 200 + Math.random() * 300);
+            }
+            
+            createFirework();
+        }
+        
+        // 愿望输入界面逻辑
+        document.getElementById('wish-btn').addEventListener('click', function() {
+            showLoading(3000);
+            setTimeout(() => {
+                showScreen(2);
+                
+                // 启动贺卡文字逐句显示
+                setTimeout(showCardText, 500);
+            }, 3000);
+        });
+        
+        // 贺卡界面逻辑
+        function showCardText() {
+            const lines = [
+                'card-line1',
+                'card-line2',
+                'card-line3',
+                'card-line4',
+                'card-line5'
+            ];
+            
+            lines.forEach((lineId, index) => {
+                setTimeout(() => {
+                    document.getElementById(lineId).classList.add('visible');
+                    
+                    // 显示Continue按钮
+                    if (index === lines.length - 1) {
+                        setTimeout(() => {
+                            document.getElementById('card-continue').style.display = 'block';
+                        }, 1000);
+                    }
+                }, index * 1000);
+            });
+            
+            // 创建气球
+            createBalloons(10);
+        }
+        
+        document.getElementById('card-continue').addEventListener('click', function() {
+            showLoading(3000);
+            setTimeout(() => {
+                showScreen(3);
+                
+                // 初始化照片墙
+                initPhotoWall();
+            }, 3000);
+        });
+        
+        // 创建气球
+        function createBalloons(count) {
+            const colors = ['#ff4081', '#ff9a9e', '#a1c4fd', '#c2e9fb', '#ffd3b6'];
+            
+            for (let i = 0; i < count; i++) {
+                const balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.left = Math.random() * 100 + 'vw';
+                balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.animationDelay = Math.random() * 10 + 's';
+                document.getElementById('card-screen').appendChild(balloon);
+            }
+        }
+        
+        // 照片墙界面逻辑
+        let currentPhoto = 0;
+        const totalPhotos = 3;
+        
+        function initPhotoWall() {
+            document.getElementById('photo-continue').style.display = 'none';
+            
+            // 添加点击事件翻页
+            document.querySelector('.photo-container').addEventListener('click', function() {
+                if (currentPhoto < totalPhotos - 1) {
+                    // 翻到下一张照片
+                    currentPhoto++;
+                    document.querySelector('.active-photo').classList.remove('active-photo');
+                    document.getElementById(`photo${currentPhoto + 1}`).classList.add('active-photo');
+                    
+                    // 如果是最后一张照片，显示Continue按钮
+                    if (currentPhoto === totalPhotos - 1) {
+                        setTimeout(() => {
+                            document.getElementById('photo-continue').style.display = 'block';
+                        }, 500);
+                    }
+                }
+            });
+        }
+        
+        document.getElementById('photo-continue').addEventListener('click', function() {
+            showLoading(3000);
+            setTimeout(() => {
+                showScreen(4);
+            }, 3000);
+        });
+        
+        // 猫猫互动界面逻辑
+        document.getElementById('cake').addEventListener('click', function() {
+            document.querySelector('.cat-message').textContent = '祝你生日快乐';
+        });
+        
+        document.getElementById('gift').addEventListener('click', function() {
+            document.querySelector('.cat-message').textContent = '其实…我好像有点喜欢你…';
+            document.getElementById('response-buttons').style.display = 'flex';
+        });
+        
+        document.getElementById('accept-btn').addEventListener('click', function() {
+            showLoading(3000);
+            setTimeout(() => {
+                showScreen(5);
+                
+                // 启动最终文字显示
+                setTimeout(showFinalText, 500);
+                
+                // 创建爱心背景
+                createHearts();
+            }, 3000);
+        });
+        
+        document.getElementById('reject-btn').addEventListener('click', function() {
+            // 按钮变小
+            document.getElementById('reject-btn').style.transform = 'scale(0.5)';
+            document.getElementById('reject-btn').textContent = '真的不再考虑一下吗？';
+            
+            // 显示流泪的猫猫
+            document.getElementById('crying-cat').style.opacity = '1';
+            
+            // 3秒后恢复
+            setTimeout(() => {
+                document.getElementById('reject-btn').style.transform = 'scale(1)';
+                document.getElementById('reject-btn').textContent = '拒绝';
+                document.getElementById('crying-cat').style.opacity = '0';
+            }, 3000);
+        });
+        
+        // 最终界面逻辑
+        function showFinalText() {
+            const lines = [
+                'final-line1',
+                'final-line2',
+                'final-line3',
+                'final-line4'
+            ];
+            
+            lines.forEach((lineId, index) => {
+                setTimeout(() => {
+                    document.getElementById(lineId).classList.add('visible');
+                }, index * 1500);
+            });
+        }
+        
+        // 创建爱心背景
+        function createHearts() {
+            const heartBg = document.getElementById('heart-bg');
+            
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heartBg.appendChild(heart);
+                
+                // 移除爱心元素
+                setTimeout(() => {
+                    heart.remove();
+                }, 8000);
+            }
+            
+            // 创建初始爱心
+            for (let i = 0; i < 20; i++) {
+                setTimeout(createHeart, i * 300);
+            }
+            
+            // 持续创建爱心
+            setInterval(createHeart, 500);
+        }
+    </script>
+</body>
+</html>
