@@ -4,8 +4,8 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <meta name="description" content="技术博客分享前端开发、设计模式和生活心得">
-   <title>技术博客</title>
+   <meta name="description" content="VaLog">
+   <title>VaLog</title>
    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style"
                                                                                                                            onload="this.onload=null;this.rel='stylesheet'">
    <noscript>
@@ -40,7 +40,7 @@
       .container {
          max-width: 1200px;
          margin: 0 auto;
-         padding: 20px;
+         padding: 13px;
          height: 100%;
       }
 
@@ -49,6 +49,7 @@
          flex-direction: column;
          height: 100%;
          overflow: hidden;
+         position: relative;
       }
 
       .mobile-top-section {
@@ -56,24 +57,29 @@
          border-radius: 10px;
          margin-bottom: 5px;
          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-         transition: all var(--transition-time) ease;
+         transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
          flex-shrink: 0;
+         contain: layout style;
+         will-change: height, padding;
+         z-index: 10;
+         position: relative;
       }
 
       .mobile-top-section.expanded {
-         padding: 20px 15px 15px;
+         padding: 10px 15px 15px;
+         max-height: 265px;
       }
 
       .mobile-top-section.collapsed {
-         padding: 10px 15px;
-         min-height: 60px;
+         padding: 10px 15px 0px;
+         min-height: 50px;
       }
 
       .mobile-top-bar {
          display: flex;
          align-items: center;
          justify-content: space-between;
-         margin-bottom: 15px;
+         margin-bottom: 10px;
          min-height: 40px;
       }
 
@@ -88,6 +94,9 @@
          color: white;
          font-size: 18px;
          flex-shrink: 0;
+         will-change: transform, background-color;
+         transition: transform 0.2s ease-out, background-color var(--transition-time);
+         contain: layout style;
       }
 
       .mobile-title-container {
@@ -112,7 +121,7 @@
          width: 36px;
          height: 36px;
          border-radius: 50%;
-         background-color: var(--primary-color);
+         background-color: transparent;
          display: flex;
          align-items: center;
          justify-content: center;
@@ -122,6 +131,11 @@
          flex-shrink: 0;
          border: none;
          outline: none;
+         will-change: transform, background-color;
+         transition: transform 0.2s ease-out, background-color var(--transition-time);
+         contain: layout style;
+         z-index: 1002;
+         position: relative;
       }
 
       .mobile-top-card {
@@ -129,10 +143,15 @@
          border-radius: 8px;
          padding: 20px;
          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-         transition: all var(--transition-time) ease;
-         max-height: 500px;
+         transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+         max-height: 190px;
          overflow: hidden;
          color: white;
+         will-change: max-height, opacity, transform;
+         contain: layout style;
+         overflow-y: auto;
+         scrollbar-width: none;
+         -ms-overflow-style: none;
       }
 
       .mobile-top-section.collapsed .mobile-top-card {
@@ -140,25 +159,41 @@
          padding: 0;
          margin: 0;
          opacity: 0;
+         transform: translateY(-10px);
       }
 
       .floating-menu {
-         position: absolute;
+         position: fixed;
          top: 70px;
          right: 15px;
          background-color: var(--dark-card);
          border-radius: 8px;
          padding: 15px;
-         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
          z-index: 100;
          display: none;
          width: calc(100% - 30px);
          max-width: 300px;
          color: white;
+         will-change: opacity, transform;
+         transition: opacity 0.25s ease-out, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+         contain: layout style;
+         transform-origin: top right;
+         border: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .floating-menu.active {
          display: block;
+         animation: menuAppear 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+         opacity: 0;
+         transform: scale(0.9);
+      }
+
+      @keyframes menuAppear {
+         to {
+            opacity: 1;
+            transform: scale(1);
+         }
       }
 
       .close-menu {
@@ -170,6 +205,10 @@
          cursor: pointer;
          background: none;
          border: none;
+         will-change: transform;
+         transition: transform 0.2s ease-out;
+         contain: layout style;
+         z-index: 1001;
       }
 
       .menu-items {
@@ -182,10 +221,14 @@
          font-size: 16px;
          cursor: pointer;
          color: white;
+         transition: color 0.2s ease-out, transform 0.2s ease-out;
+         will-change: color, transform;
+         contain: layout style;
       }
 
       .menu-item:hover {
          color: var(--primary-color);
+         transform: translateX(5px);
       }
 
       .article-list-section {
@@ -196,6 +239,8 @@
          overflow: hidden;
          will-change: transform;
          contain: layout style;
+         z-index: 1;
+         position: relative;
       }
 
       .mobile-cards-container {
@@ -221,6 +266,7 @@
          transform: translateZ(0);
          -webkit-transform: translateZ(0);
          contain: layout style paint;
+         z-index: 1;
       }
 
       .mobile-cards-wrapper::-webkit-scrollbar {
@@ -228,7 +274,7 @@
       }
 
       .rectangle-card {
-         min-width: 79px;
+         min-width: 82px;
          height: 100%;
          border-radius: 10px;
          cursor: pointer;
@@ -240,17 +286,19 @@
          will-change: transform, min-width;
          contain: layout style;
          background: linear-gradient(135deg, var(--primary-color), #c0392b);
+         z-index: 1;
       }
 
       .rectangle-card.active {
-         min-width: 265px;
+         min-width: 279px;
          background: linear-gradient(135deg, #c0392b, #a93226);
+         z-index: 2;
       }
 
       .vertical-title {
          position: absolute;
          top: 20px;
-         left: 20px;
+         left: 13px;
          color: white;
          font-size: 18px;
          font-weight: bold;
@@ -265,13 +313,11 @@
          opacity: 0;
       }
 
-      /* 重新设计文章卡片布局结构 */
       .card-content-expanded {
          position: absolute;
          top: 0;
          left: 0;
-         width: 265px;
-         /*展开宽度控制*/
+         width: 279px;
          height: 100%;
          padding: 15px;
          color: white;
@@ -286,12 +332,12 @@
          opacity: 1;
       }
 
-      /* 标签容器 - 固定位置 */
       .card-tags {
          display: flex;
          gap: 8px;
          margin-bottom: 10px;
          flex-shrink: 0;
+         flex-wrap: wrap;
       }
 
       .card-tag {
@@ -301,9 +347,19 @@
          border-radius: 4px;
          font-size: 12px;
          font-weight: 500;
+         will-change: transform, background-color;
+         transition: transform 0.2s ease-out, background-color 0.2s ease-out;
+         contain: layout style;
+         width: auto;
+         white-space: nowrap;
       }
 
-      /* 标题容器 - 固定位置 */
+      /* 日期标签样式 */
+      .date-tag {
+         font-weight: 500;
+         padding-left: 6px;
+      }
+
       .card-title-container {
          flex-shrink: 0;
          margin-bottom: 10px;
@@ -314,9 +370,11 @@
          font-weight: 600;
          color: white;
          margin: 0;
+         will-change: transform;
+         transition: transform 0.2s ease-out;
+         contain: layout style;
       }
 
-      /* 内容容器 - 可滚动区域 */
       .card-content-main {
          flex: 1;
          overflow-y: auto;
@@ -338,13 +396,11 @@
          color: white;
       }
 
-      /* 按钮容器 - 固定位置 */
       .card-footer {
          flex-shrink: 0;
          padding-top: 10px;
          display: flex;
          justify-content: flex-end;
-         border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .mobile-card-btn {
@@ -356,14 +412,11 @@
          cursor: pointer;
          font-weight: 500;
          font-size: 14px;
-         transition: background-color var(--transition-time);
+         transition: background-color 0.2s ease-out, transform 0.2s ease-out;
+         will-change: transform, background-color;
+         contain: layout style;
       }
 
-      .mobile-card-btn:hover {
-         background-color: rgba(255, 255, 255, 0.3);
-      }
-
-      /* 特殊卡片样式 */
       .special-card {
          background: linear-gradient(135deg, var(--primary-color), #c0392b);
          color: white;
@@ -371,11 +424,13 @@
          padding: 15px;
          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
          cursor: pointer;
-         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+         transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
          overflow: hidden;
          flex-shrink: 0;
-         will-change: transform;
+         will-change: transform, background;
          contain: layout style;
+         z-index: 1;
+         position: relative;
       }
 
       .special-card-header {
@@ -389,6 +444,9 @@
          -webkit-user-select: none;
          -moz-user-select: none;
          -ms-user-select: none;
+         will-change: transform;
+         transition: transform 0.2s ease-out;
+         contain: layout style;
       }
 
       .special-card-title {
@@ -397,11 +455,16 @@
          color: white;
          margin: 0;
          pointer-events: none;
+         will-change: transform;
+         transition: transform 0.2s ease-out;
+         contain: layout style;
       }
 
       .special-card-icon {
-         transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+         transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
          pointer-events: none;
+         will-change: transform;
+         contain: layout style;
       }
 
       .special-card.expanded .special-card-icon {
@@ -412,38 +475,37 @@
          max-height: 0;
          opacity: 0;
          overflow: hidden;
-         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-         will-change: max-height, opacity, transform;
+         transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+         will-change: max-height, opacity, margin, padding;
          contain: layout style;
          padding-top: 0;
          margin-top: 0;
+         transform-origin: top;
       }
 
       .special-card.expanded .special-card-content {
          max-height: 320px;
          opacity: 1;
          margin-top: 10px;
-         padding-top: 10px;
-         border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .special-cards-container {
          display: flex;
          flex-direction: column;
          gap: 15px;
-         height: 185px;
+         height: auto;
+         max-height: 194px;
          overflow-y: auto;
          scrollbar-width: none;
          -ms-overflow-style: none;
          will-change: transform;
-         padding-right: 5px;
+         padding-right: 0px;
       }
 
       .special-cards-container::-webkit-scrollbar {
          display: none;
       }
 
-      /* 特殊卡片子项 - 固定高度布局 */
       .special-card-item {
          background-color: rgba(255, 255, 255, 0.1);
          border-radius: 8px;
@@ -452,9 +514,12 @@
          display: flex;
          flex-direction: column;
          flex-shrink: 0;
-         height: 180px;
+         height: 187px;
          overflow: hidden;
          cursor: auto;
+         will-change: transform, opacity;
+         transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+         contain: layout style;
       }
 
       .special-card-item-content {
@@ -464,21 +529,21 @@
          overflow: hidden;
       }
 
-      /* 特殊卡片的标签容器 */
       .special-card-item .card-tags {
          margin-bottom: 8px;
       }
 
-      /* 特殊卡片的标题容器 */
       .special-card-item h4 {
          font-size: 16px;
          font-weight: 600;
          margin-bottom: 8px;
          color: white;
          flex-shrink: 0;
+         will-change: transform;
+         transition: transform 0.2s ease-out;
+         contain: layout style;
       }
 
-      /* 特殊卡片的内容容器 */
       .special-card-item-content-main {
          flex: 1;
          overflow-y: auto;
@@ -500,13 +565,11 @@
          color: white;
       }
 
-      /* 特殊卡片的按钮容器 */
       .special-card-item-footer {
          flex-shrink: 0;
          padding-top: 8px;
          display: flex;
          justify-content: flex-end;
-         border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
 
       .special-card-btn {
@@ -518,11 +581,9 @@
          cursor: pointer;
          font-weight: 500;
          font-size: 14px;
-         transition: background-color var(--transition-time);
-      }
-
-      .special-card-btn:hover {
-         background-color: rgba(255, 255, 255, 0.3);
+         transition: background-color 0.2s ease-out, transform 0.2s ease-out;
+         will-change: transform, background-color;
+         contain: layout style;
       }
 
       .light-mode {
@@ -536,21 +597,21 @@
 
       .light-mode .mobile-top-card {
          background-color: white;
-         color: white;
+         color: gray;
       }
 
       .light-mode .mobile-top-card h2 {
-         color: white;
+         color: #cdcdcd;
       }
 
       .light-mode .floating-menu {
          background-color: white;
-         color: white;
+         color: gray;
       }
 
       .light-mode .menu-item {
          border-bottom-color: #eee;
-         color: white;
+         color: gray;
       }
 
       .light-mode .menu-item:hover {
@@ -618,6 +679,11 @@
          color: white;
       }
 
+      .light-mode .date-tag {
+         background-color: rgba(0, 0, 0, 0.15) !important;
+         border-left-color: var(--light-primary);
+      }
+
       .light-mode .vertical-title {
          color: white;
          text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
@@ -630,6 +696,58 @@
       .light-mode .special-card-title {
          color: white;
       }
+
+      .light-mode .floating-menu {
+         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+         border: 1px solid rgba(0, 0, 0, 0.1);
+      }
+
+      /* 动画优化 */
+      .menu-btn:active,
+      .close-menu:active,
+      .mobile-card-btn:active,
+      .special-card-btn:active {
+         transform: scale(0.95);
+      }
+
+      .card-tag:hover {
+         transform: translateY(-1px);
+         background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .card-title-container h2:hover {
+         transform: translateX(2px);
+      }
+
+      .special-card-item:hover {
+         transform: translateY(-2px);
+         opacity: 0.95;
+      }
+
+      .special-card-title:hover {
+         transform: translateX(2px);
+      }
+
+      /* 优化展开收起动画性能 */
+      .mobile-top-section,
+      .mobile-top-card,
+      .special-card,
+      .special-card-content,
+      .rectangle-card {
+         backface-visibility: hidden;
+         -webkit-backface-visibility: hidden;
+         perspective: 1000;
+         -webkit-perspective: 1000;
+      }
+
+      /* 平滑滚动优化 */
+      .mobile-cards-wrapper,
+      .special-cards-container,
+      .card-content-main,
+      .special-card-item-content-main {
+         scroll-behavior: smooth;
+         -webkit-overflow-scrolling: touch;
+      }
    </style>
 </head>
 
@@ -638,45 +756,32 @@
       <div class="mobile-layout">
          <div class="mobile-top-section expanded" id="mobileTopSection">
             <div class="mobile-top-bar">
-               <div class="avatar" role="img" aria-label="用户头像">
-                  <i class="fas fa-user" aria-hidden="true"></i>
+               <div class="avatar" role="img" aria-label="Img">
+                  <img src="avatar.png" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                </div>
-               <div class="mobile-title-container" id="titleToggle" tabindex="0" role="button" aria-label="折叠/展开标题区域">
-                  <div class="mobile-title">技术博客</div>
+               <div class="mobile-title-container" id="titleToggle" tabindex="0" role="button" aria-label="收起标题">
+                  <div class="mobile-title">Ae1autumn</div>
                </div>
-               <button class="menu-btn" id="menuBtn" aria-label="打开菜单" aria-expanded="false"
+               <button class="menu-btn" id="menuBtn" aria-label="浮动菜单" aria-expanded="false"
                                                                                                                                        aria-controls="floatingMenu">
                   <i class="fas fa-bars" aria-hidden="true"></i>
                </button>
             </div>
-
             <div class="mobile-top-card">
-               <h2>前端技术分享</h2>
-               <p>分享前端开发经验、设计模式和生活心得，专注用户体验和性能优化</p>
-               <div style="display: flex; justify-content: space-between; margin-top: 15px;">
-                  <div>
-                     <span style="font-size: 14px; color: #aaa;">文章数: 128</span>
-                     <span style="margin-left: 15px; font-size: 14px; color: #aaa;">阅读量: 2.4万</span>
-                  </div>
-                  <button
-                                                                                                                                          style="background-color: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 5px; font-size: 14px; cursor: pointer;">
-                     关注
-                  </button>
-               </div>
+               <h2>Welcome</h2>
+               <p>Introduction</p>
+
             </div>
 
             <div class="floating-menu" id="floatingMenu" role="menu" aria-hidden="true">
-               <button class="close-menu" id="closeMenu" aria-label="关闭菜单">
+               <button class="close-menu" id="closeMenu" aria-label="关闭">
                   <i class="fas fa-times" aria-hidden="true"></i>
                </button>
                <div class="menu-items">
-                  <div class="menu-item" role="menuitem" tabindex="0">首页</div>
-                  <div class="menu-item" role="menuitem" tabindex="0">文章</div>
-                  <div class="menu-item" role="menuitem" tabindex="0">分类</div>
-                  <div class="menu-item" role="menuitem" tabindex="0">关于</div>
-                  <div class="menu-item" role="menuitem" tabindex="0">联系</div>
+                  <div class="menu-item" role="menuitem" tabindex="0">Contact</div>
+                  <div class="menu-item" role="menuitem" tabindex="0">About</div>
                   <div class="menu-item" id="darkModeToggle" role="menuitem" tabindex="0">
-                     <i class="fas fa-sun" aria-hidden="true" style="margin-right: 10px;"></i>切换亮色模式
+                     <i class="fas fa-sun" aria-hidden="true" style="margin-right: 10px;"></i>日间模式
                   </div>
                </div>
             </div>
@@ -685,211 +790,21 @@
          <div class="article-list-section" id="articleListSection">
             <div class="mobile-cards-container">
                <div class="mobile-cards-wrapper" id="mobileCardsWrapper">
-                  <!-- 文章卡片1 - 使用新的布局结构 -->
-                  <article class="rectangle-card" id="card1" role="article" aria-labelledby="card1Title">
-                     <div class="vertical-title">React</div>
-                     <div class="card-content-expanded">
-                        <div class="card-tags">
-                           <span class="card-tag">前端</span>
-                           <span class="card-tag">框架</span>
-                           <span class="card-tag">性能</span>
-                        </div>
-                        <div class="card-title-container">
-                           <h2 id="card1Title">React 18 新特性深度解析</h2>
-                        </div>
-                        <div class="card-content-main">
-                           <p>React 18 带来了并发渲染、自动批处理、Suspense 等新特性，显著提升了应用性能。本文将深入探讨这些新功能的实现原理和应用场景。</p>
-                           <p>通过学习本文，您将掌握如何利用并发特性优化大型应用的渲染性能，以及如何正确使用新的 API 来提升用户体验。</p>
-                           <p>并发渲染是 React 18 的核心特性，它允许 React 在渲染过程中中断和恢复工作，从而让应用保持响应。自动批处理则优化了状态更新的处理方式，减少了不必要的渲染。</p>
-                           <p>Suspense 组件现在支持数据获取，可以让组件在数据加载完成前显示加载状态，提升用户体验。此外，React 18 还引入了新的 Hook 和 API，如
-                              useId、useSyncExternalStore 等。</p>
-                           <p>本文还将介绍如何从旧版本迁移到 React 18，以及需要注意的兼容性问题。通过实际案例演示，帮助您快速上手 React 18 的新特性。</p>
-                        </div>
-                        <div class="card-footer">
-                           <button class="mobile-card-btn">阅读全文</button>
-                        </div>
-                     </div>
-                  </article>
-
-                  <!-- 文章卡片2 - 使用新的布局结构 -->
-                  <article class="rectangle-card active" id="card2" role="article" aria-labelledby="card2Title">
-                     <div class="vertical-title">Vue3</div>
-                     <div class="card-content-expanded">
-                        <div class="card-tags">
-                           <span class="card-tag">前端</span>
-                           <span class="card-tag">框架</span>
-                           <span class="card-tag">Composition</span>
-                        </div>
-                        <div class="card-title-container">
-                           <h2 id="card2Title">Vue 3 Composition API 实战</h2>
-                        </div>
-                        <div class="card-content-main">
-                           <p>Vue 3 的 Composition API 彻底改变了组件开发方式，提供了更好的代码组织和复用能力。本文将结合实战项目，展示 Composition API 的强大功能。
-                           </p>
-                           <p>我们将从基础概念开始，逐步构建一个完整的应用，涵盖响应式、生命周期、自定义组合函数等核心内容。</p>
-                           <p>Composition API 允许您将相关逻辑组织在一起，而不是按选项（data、methods、computed）分割。这使得代码更易于理解和维护，尤其是在处理复杂组件时。
-                           </p>
-                           <p>本文还将介绍如何使用 Vue 3 的新特性，如 Teleport、Fragments 和自定义渲染器。通过实际项目示例，展示如何构建现代化的 Vue 3 应用。</p>
-                           <p>最后，我们将讨论 Composition API 与 Options API 的对比，以及何时选择哪种方式。同时提供性能优化建议和最佳实践。</p>
-                        </div>
-                        <div class="card-footer">
-                           <button class="mobile-card-btn">阅读全文</button>
-                        </div>
-                     </div>
-                  </article>
-
-                  <!-- 文章卡片3 - 使用新的布局结构 -->
-                  <article class="rectangle-card" id="card3" role="article" aria-labelledby="card3Title">
-                     <div class="vertical-title">性能</div>
-                     <div class="card-content-expanded">
-                        <div class="card-tags">
-                           <span class="card-tag">性能优化</span>
-                           <span class="card-tag">浏览器</span>
-                           <span class="card-tag">渲染</span>
-                        </div>
-                        <div class="card-title-container">
-                           <h2 id="card3Title">现代浏览器渲染性能优化指南</h2>
-                        </div>
-                        <div class="card-content-main">
-                           <p>深入了解浏览器渲染机制，从 DOM 操作、CSS 布局、合成层等多个维度优化应用性能。本文提供实用的性能优化技巧和工具使用方法。</p>
-                           <p>通过学习本文，您将掌握如何分析性能瓶颈，使用 Performance API 和 DevTools 进行性能调试，以及应用最佳的优化实践。</p>
-                           <p>浏览器渲染流程包括解析 HTML、构建 DOM 树、计算样式、布局、绘制和合成。理解每个阶段对性能的影响是关键。</p>
-                           <p>本文将介绍如何避免强制同步布局、减少重绘和重排、优化 JavaScript 执行、使用 CSS 硬件加速等技术。同时提供代码示例和性能测试方法。</p>
-                           <p>此外，我们还将探讨现代前端框架的性能优化策略，以及如何利用 Web Workers 和 Service Workers 提升应用性能。</p>
-                        </div>
-                        <div class="card-footer">
-                           <button class="mobile-card-btn">阅读全文</button>
-                        </div>
-                     </div>
-                  </article>
-
-                  <!-- 文章卡片4 - 使用新的布局结构 -->
-                  <article class="rectangle-card" id="card4" role="article" aria-labelledby="card4Title">
-                     <div class="vertical-title">TypeScript</div>
-                     <div class="card-content-expanded">
-                        <div class="card-tags">
-                           <span class="card-tag">类型安全</span>
-                           <span class="card-tag">工具链</span>
-                           <span class="card-tag">工程化</span>
-                        </div>
-                        <div class="card-title-container">
-                           <h2 id="card4Title">TypeScript 高级类型系统解析</h2>
-                        </div>
-                        <div class="card-content-main">
-                           <p>TypeScript 的类型系统提供了强大的类型安全保证，本文将深入探讨条件类型、映射类型、泛型约束等高级类型特性。</p>
-                           <p>通过实际案例展示如何利用 TypeScript 的类型系统构建健壮的类型定义，提升代码的可维护性和开发效率。</p>
-                           <p>条件类型允许您根据输入类型创建动态类型，映射类型可以基于现有类型创建新类型，而泛型约束则确保类型参数满足特定条件。</p>
-                           <p>本文还将介绍 TypeScript 4.0+ 的新特性，如可变元组类型、模板字面量类型、标记的元组元素等。这些特性进一步增强了 TypeScript 的类型系统。</p>
-                           <p>最后，我们将讨论如何在大型项目中使用 TypeScript，包括配置 tsconfig.json、使用第三方类型定义、以及集成到构建流程中。</p>
-                        </div>
-                        <div class="card-footer">
-                           <button class="mobile-card-btn">阅读全文</button>
-                        </div>
-                     </div>
-                  </article>
-
-                  <!-- 文章卡片5 - 使用新的布局结构 -->
-                  <article class="rectangle-card" id="card5" role="article" aria-labelledby="card5Title">
-                     <div class="vertical-title">架构</div>
-                     <div class="card-content-expanded">
-                        <div class="card-tags">
-                           <span class="card-tag">微前端</span>
-                           <span class="card-tag">架构设计</span>
-                           <span class="card-tag">模块化</span>
-                        </div>
-                        <div class="card-title-container">
-                           <h2 id="card5Title">微前端架构在企业级应用中的实践</h2>
-                        </div>
-                        <div class="card-content-main">
-                           <p>微前端架构正在成为大型前端应用的主流解决方案。本文将分享在实际项目中实施微前端的经验，包括技术选型、集成方案和部署策略。</p>
-                           <p>我们将分析不同微前端框架的优缺点，并提供完整的实施路线图和最佳实践建议。</p>
-                           <p>微前端允许团队独立开发、测试和部署前端应用的不同部分，从而提高开发效率和系统可维护性。本文将介绍多种微前端实现方案，包括 iframe、Web Components、Module
-                              Federation 等。</p>
-                           <p>我们还将讨论微前端架构中的常见挑战，如样式隔离、状态管理、路由协调、公共依赖等，并提供解决方案。通过实际案例展示如何构建可扩展的微前端架构。</p>
-                           <p>最后，本文将介绍微前端的 DevOps 实践，包括持续集成/持续部署、监控和故障排除。帮助您在组织中成功实施微前端架构。</p>
-                        </div>
-                        <div class="card-footer">
-                           <button class="mobile-card-btn">阅读全文</button>
-                        </div>
-                     </div>
-                  </article>
+                  <!-- 文章卡片将通过JavaScript动态生成 -->
                </div>
             </div>
          </div>
 
-         <!-- 特殊卡片 - 使用新的布局结构 -->
          <section class="special-card" id="specialCard" aria-labelledby="specialCardTitle" aria-expanded="false">
             <div class="special-card-header">
-               <h3 id="specialCardTitle" class="special-card-title">热门专题</h3>
+               <h3 id="specialCardTitle" class="special-card-title">special</h3>
                <div class="special-card-icon">
                   <i class="fas fa-chevron-down" aria-hidden="true"></i>
                </div>
             </div>
             <div class="special-card-content" id="specialCardContent">
                <div class="special-cards-container" id="specialCardsContainer">
-                  <!-- 特殊卡片1 -->
-                  <div class="special-card-item">
-                     <div class="special-card-item-content">
-                        <div class="card-tags">
-                           <span class="card-tag">动画</span>
-                           <span class="card-tag">性能</span>
-                           <span class="card-tag">Canvas</span>
-                        </div>
-                        <h4>Web 动画性能优化全攻略</h4>
-                        <div class="special-card-item-content-main">
-                           <p>深入探讨 CSS 动画、Web Animations API 和 Canvas 动画的性能优化技巧，包括 GPU 加速、合成层优化和帧率控制。</p>
-                           <p>通过实际案例演示如何在不同场景下选择最优的动画方案，确保流畅的视觉体验。</p>
-                           <p>CSS 动画通过 transform 和 opacity 属性可以实现硬件加速，而不会触发重排和重绘。Web Animations API 提供了更精细的动画控制能力。</p>
-                           <p>Canvas 动画适合复杂图形和游戏，但需要注意内存管理和帧率控制。本文将介绍如何使用 requestAnimationFrame 实现平滑的动画效果。</p>
-                           <p>此外，我们还将讨论如何测量动画性能，使用 Chrome DevTools 分析动画瓶颈，以及跨浏览器兼容性问题的解决方案。</p>
-                        </div>
-                        <div class="special-card-item-footer">
-                           <button class="special-card-btn">查看专题</button>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- 特殊卡片2 -->
-                  <div class="special-card-item">
-                     <div class="special-card-item-content">
-                        <div class="card-tags">
-                           <span class="card-tag">安全</span>
-                           <span class="card-tag">认证</span>
-                           <span class="card-tag">加密</span>
-                        </div>
-                        <h4>现代 Web 应用安全最佳实践</h4>
-                        <div class="special-card-item-content-main">
-                           <p>全面介绍 Web 应用安全威胁和防御策略，涵盖 XSS、CSRF、JWT 安全、OAuth 2.0 等关键安全主题。</p>
-                           <p>提供实用的安全工具和自动化安全检查流程，帮助构建更安全的 Web 应用。</p>
-                           <p>XSS（跨站脚本）攻击是最常见的 Web 安全威胁之一，本文将介绍如何通过输入验证、输出编码和内容安全策略来防御。</p>
-                           <p>CSRF（跨站请求伪造）攻击可以通过同源策略、CSRF Token 和 SameSite Cookie 属性来防范。JWT 安全需要注意令牌存储、过期时间和签名验证。</p>
-                           <p>OAuth 2.0 是现代身份验证的标准协议，本文将介绍其流程、安全考虑和最佳实践。同时提供安全工具推荐和自动化安全检查方法。</p>
-                        </div>
-                        <div class="special-card-item-footer">
-                           <button class="special-card-btn">查看专题</button>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- 特殊卡片3 -->
-                  <div class="special-card-item">
-                     <div class="special-card-item-content">
-                        <div class="card-tags">
-                           <span class="card-tag">PWA</span>
-                           <span class="card-tag">离线</span>
-                           <span class="card-tag">Service Worker</span>
-                        </div>
-                        <h4>渐进式 Web 应用开发指南</h4>
-                        <div class="special-card-item-content-main">
-                           <p>手把手教您构建功能完整的 PWA 应用，包括 Service Worker 配置、离线缓存策略、推送通知和安装到主屏幕。</p>
-                           <p>结合最新 Web 技术，提供最佳的用户体验和性能优化方案。</p>
-                           <p>Service Worker 是 PWA 的核心技术，它允许您控制网络请求、缓存资源和实现离线功能。本文将详细介绍 Service Worker 的生命周期和缓存策略。</p>
-                           <p>Web App Manifest 文件定义了应用的元数据，如名称、图标、主题颜色等，使用户能够将应用安装到主屏幕。推送通知可以重新吸引用户，提高用户参与度。</p>
-                           <p>本文还将介绍 PWA 的性能优化技巧，如预缓存关键资源、按需缓存、缓存版本管理等。通过实际案例展示如何构建高性能的 PWA 应用。</p>
-                        </div>
-                        <div class="special-card-item-footer">
-                           <button class="special-card-btn">查看专题</button>
-                        </div>
-                     </div>
-                  </div>
+                  <!-- Special卡片将通过JavaScript动态生成 -->
                </div>
             </div>
          </section>
@@ -897,6 +812,54 @@
    </div>
 
    <script>
+      // 数据存储位置：JavaScript对象中统一管理
+      const blogData = {
+         // 文章列表数据
+         articles: [
+            {
+               id: 'article-1',
+               title: 'article-title',
+               tags: ['tag1', 'tag2', 'tag3', 'tag4'],
+               verticalTitle: 'view-title',
+               date: '2023-10-15',
+               content: [
+                  'P1',
+                  'P2'
+               ],
+               url: 'https://example.com/',
+               gradient: ['#e74c3c', '#c0392b']
+            },
+            {
+               id: 'article-2',
+               title: 'article-title',
+               tags: ['tag1', 'tag2', 'tag3', 'tag4'],
+               verticalTitle: 'view-title',
+               date: '2023-11-20',
+               content: [
+                  'P1',
+                  'P2'
+               ],
+               url: 'https://example.com/',
+               gradient: ['#e74c3c', '#c0392b']
+            },
+         ],
+         
+         // Special列表数据
+         specials: [
+            {
+               id: 'special-1',
+               title: 'article-title',
+               tags: ['tag1', 'tag2', 'tag3'],
+               content: [
+               'P1',
+               'P2'
+               ],
+               url: 'https://example.com/',
+               gradient: ['#e74c3c', '#c0392b']
+            },
+         ],
+      };
+      
       document.addEventListener('DOMContentLoaded', function() {
             const mobileTopSection = document.getElementById('mobileTopSection');
             const titleToggle = document.getElementById('titleToggle');
@@ -927,32 +890,204 @@
                 };
             }
             
-            // 预先计算特殊卡片内容高度
-            let specialCardExpandedHeight = null;
+            // 动态生成文章卡片
+            function generateArticleCards() {
+               cardsWrapper.innerHTML = '';
+               
+               blogData.articles.forEach((article, index) => {
+                  const card = document.createElement('article');
+                  card.className = 'rectangle-card';
+                  card.id = `card${index + 1}`;
+                  card.setAttribute('role', 'article');
+                  card.setAttribute('aria-labelledby', `card${index + 1}Title`);
+                  
+                  const verticalTitle = document.createElement('div');
+                  verticalTitle.className = 'vertical-title';
+                  verticalTitle.textContent = article.verticalTitle || article.tags[0];
+                  
+                  const expandedContent = document.createElement('div');
+                  expandedContent.className = 'card-content-expanded';
+                  
+                  const tagsContainer = document.createElement('div');
+                  tagsContainer.className = 'card-tags';
+                  
+                  // 添加日期标签
+                  if (article.date) {
+                     const dateTag = document.createElement('span');
+                     dateTag.className = 'card-tag date-tag';
+                     dateTag.textContent = article.date;
+                     tagsContainer.appendChild(dateTag);
+                  }
+                  
+                  // 添加其他标签
+                  article.tags.forEach(tag => {
+                     const tagSpan = document.createElement('span');
+                     tagSpan.className = 'card-tag';
+                     tagSpan.textContent = tag;
+                     tagsContainer.appendChild(tagSpan);
+                  });
+                  
+                  const titleContainer = document.createElement('div');
+                  titleContainer.className = 'card-title-container';
+                  const title = document.createElement('h2');
+                  title.id = `card${index + 1}Title`;
+                  title.textContent = article.title;
+                  titleContainer.appendChild(title);
+                  
+                  const contentMain = document.createElement('div');
+                  contentMain.className = 'card-content-main';
+                  
+                  article.content.forEach(paragraph => {
+                     const p = document.createElement('p');
+                     p.textContent = paragraph;
+                     contentMain.appendChild(p);
+                  });
+                  
+                  const footer = document.createElement('div');
+                  footer.className = 'card-footer';
+                  const button = document.createElement('button');
+                  button.className = 'mobile-card-btn';
+                  button.textContent = 'Read';
+                  button.addEventListener('click', function(event) {
+                     event.stopPropagation();
+                     window.open(article.url, '_blank');
+                  });
+                  footer.appendChild(button);
+                  
+                  expandedContent.appendChild(tagsContainer);
+                  expandedContent.appendChild(titleContainer);
+                  expandedContent.appendChild(contentMain);
+                  expandedContent.appendChild(footer);
+                  
+                  card.appendChild(verticalTitle);
+                  card.appendChild(expandedContent);
+                  
+                  // 设置默认激活第二个卡片
+                  if (index === 1) {
+                     card.classList.add('active');
+                  }
+                  
+                  // 添加点击事件
+                  card.addEventListener('click', function(event) {
+                     if (event.target.closest('.mobile-card-btn')) {
+                        return;
+                     }
+                     
+                     this.classList.toggle('active');
+                     
+                     document.querySelectorAll('.rectangle-card').forEach(r => {
+                        if (r !== this) {
+                           r.classList.remove('active');
+                        }
+                     });
+                  });
+                  
+                  cardsWrapper.appendChild(card);
+               });
+            }
             
-            // 标题区域折叠/展开
+            // 动态生成special卡片
+            function generateSpecialCards() {
+               specialCardsContainer.innerHTML = '';
+               
+               blogData.specials.forEach((special, index) => {
+                  const cardItem = document.createElement('div');
+                  cardItem.className = 'special-card-item';
+                  
+                  const content = document.createElement('div');
+                  content.className = 'special-card-item-content';
+                  
+                  const tagsContainer = document.createElement('div');
+                  tagsContainer.className = 'card-tags';
+                  
+                  // 为special卡片添加日期
+                  if (special.date) {
+                     const dateTag = document.createElement('span');
+                     dateTag.className = 'card-tag date-tag';
+                     dateTag.textContent = special.date;
+                     tagsContainer.appendChild(dateTag);
+                  }
+                  
+                  special.tags.forEach(tag => {
+                     const tagSpan = document.createElement('span');
+                     tagSpan.className = 'card-tag';
+                     tagSpan.textContent = tag;
+                     tagsContainer.appendChild(tagSpan);
+                  });
+                  
+                  const title = document.createElement('h4');
+                  title.textContent = special.title;
+                  
+                  const contentMain = document.createElement('div');
+                  contentMain.className = 'special-card-item-content-main';
+                  
+                  special.content.forEach(paragraph => {
+                     const p = document.createElement('p');
+                     p.textContent = paragraph;
+                     contentMain.appendChild(p);
+                  });
+                  
+                  const footer = document.createElement('div');
+                  footer.className = 'special-card-item-footer';
+                  const button = document.createElement('button');
+                  button.className = 'special-card-btn';
+                  button.textContent = 'Visit';
+                  button.addEventListener('click', function() {
+                     window.open(special.url, '_blank');
+                  });
+                  footer.appendChild(button);
+                  
+                  content.appendChild(tagsContainer);
+                  content.appendChild(title);
+                  content.appendChild(contentMain);
+                  content.appendChild(footer);
+                  
+                  cardItem.appendChild(content);
+                  specialCardsContainer.appendChild(cardItem);
+               });
+            }
+            
+            // 初始化卡片
+            generateArticleCards();
+            generateSpecialCards();
+            
+            // 优化顶部区域展开/收起动画
             titleToggle.addEventListener('click', function() {
-                mobileTopSection.classList.toggle('expanded');
-                mobileTopSection.classList.toggle('collapsed');
-            });
-            
-            // 特殊卡片展开/收起 - 只点击header部分
-            specialCardHeader.addEventListener('click', function(e) {
-                e.stopPropagation();
-                const isExpanded = specialCard.classList.toggle('expanded');
-                specialCard.setAttribute('aria-expanded', isExpanded);
+                mobileTopSection.style.willChange = 'height, padding';
                 
                 requestAnimationFrame(() => {
-                    if (isExpanded) {
-                        if (!specialCardExpandedHeight) {
-                            const contentHeight = specialCardContent.scrollHeight;
-                            const headerHeight = specialCardHeader.offsetHeight;
-                            specialCardExpandedHeight = contentHeight + headerHeight + 20;
-                        }
-                        specialCardContent.style.maxHeight = specialCardExpandedHeight + 'px';
+                    mobileTopSection.classList.toggle('expanded');
+                    mobileTopSection.classList.toggle('collapsed');
+                    
+                    setTimeout(() => {
+                        mobileTopSection.style.willChange = 'auto';
+                    }, 400);
+                });
+            });
+            
+            // 优化特殊卡片展开/收起动画
+            specialCardHeader.addEventListener('click', function(e) {
+                e.stopPropagation();
+                
+                specialCardContent.style.willChange = 'max-height';
+                specialCard.style.willChange = 'background';
+                
+                const isExpanding = !specialCard.classList.contains('expanded');
+                
+                requestAnimationFrame(() => {
+                    specialCard.classList.toggle('expanded');
+                    specialCard.setAttribute('aria-expanded', specialCard.classList.contains('expanded'));
+                    
+                    if (isExpanding) {
+                        specialCardContent.style.maxHeight = `${specialCardContent.scrollHeight}px`;
                     } else {
                         specialCardContent.style.maxHeight = '0';
                     }
+                    
+                    setTimeout(() => {
+                        specialCardContent.style.willChange = 'auto';
+                        specialCard.style.willChange = 'auto';
+                    }, 350);
                 });
             });
             
@@ -961,19 +1096,35 @@
                 e.stopPropagation();
             });
             
-            // 菜单按钮点击
+            // 优化菜单动画
             menuBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                floatingMenu.classList.add('active');
-                menuBtn.setAttribute('aria-expanded', 'true');
-                floatingMenu.setAttribute('aria-hidden', 'false');
+                floatingMenu.style.willChange = 'opacity, transform';
+                
+                requestAnimationFrame(() => {
+                    floatingMenu.classList.add('active');
+                    menuBtn.setAttribute('aria-expanded', 'true');
+                    floatingMenu.setAttribute('aria-hidden', 'false');
+                    
+                    setTimeout(() => {
+                        floatingMenu.style.willChange = 'auto';
+                    }, 300);
+                });
             });
             
-            // 关闭菜单
+            // 优化关闭菜单动画
             closeMenu.addEventListener('click', function() {
-                floatingMenu.classList.remove('active');
-                menuBtn.setAttribute('aria-expanded', 'false');
-                floatingMenu.setAttribute('aria-hidden', 'true');
+                floatingMenu.style.willChange = 'opacity, transform';
+                
+                requestAnimationFrame(() => {
+                    floatingMenu.classList.remove('active');
+                    menuBtn.setAttribute('aria-expanded', 'false');
+                    floatingMenu.setAttribute('aria-hidden', 'true');
+                    
+                    setTimeout(() => {
+                        floatingMenu.style.willChange = 'auto';
+                    }, 300);
+                });
             });
             
             // 点击外部关闭菜单
@@ -981,54 +1132,22 @@
                 if (!event.target.closest('#floatingMenu') && 
                     !event.target.closest('#menuBtn') &&
                     floatingMenu.classList.contains('active')) {
-                    floatingMenu.classList.remove('active');
-                    menuBtn.setAttribute('aria-expanded', 'false');
-                    floatingMenu.setAttribute('aria-hidden', 'true');
-                }
-            });
-            
-            // 文章卡片点击切换 - 点击卡片背景切换，点击按钮不切换
-            const rectangleCards = document.querySelectorAll('.rectangle-card');
-            rectangleCards.forEach((card, index) => {
-                card.addEventListener('click', function(event) {
-                    // 如果点击的是按钮，则不切换卡片状态
-                    if (event.target.closest('.mobile-card-btn')) {
-                        return;
-                    }
                     
-                    this.classList.toggle('active');
+                    floatingMenu.style.willChange = 'opacity, transform';
                     
-                    rectangleCards.forEach(r => {
-                        if (r !== this) {
-                            r.classList.remove('active');
-                        }
+                    requestAnimationFrame(() => {
+                        floatingMenu.classList.remove('active');
+                        menuBtn.setAttribute('aria-expanded', 'false');
+                        floatingMenu.setAttribute('aria-hidden', 'true');
+                        
+                        setTimeout(() => {
+                            floatingMenu.style.willChange = 'auto';
+                        }, 300);
                     });
-                });
-                
-                if (index === 1) {
-                    card.classList.add('active');
                 }
             });
             
-            // 为文章卡片按钮添加事件监听器
-            const articleButtons = document.querySelectorAll('.mobile-card-btn');
-            articleButtons.forEach(button => {
-                button.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                    alert('即将跳转到文章详情页面');
-                });
-            });
-            
-            // 为特殊卡片按钮添加事件监听器
-            const specialCardButtons = document.querySelectorAll('.special-card-btn');
-            specialCardButtons.forEach(button => {
-                button.addEventListener('click', function(event) {
-                    event.stopPropagation();
-                    alert('即将跳转到专题详情页面');
-                });
-            });
-            
-            // 暗黑模式切换
+            // 夜间模式切换
             darkModeToggle.addEventListener('click', function() {
                 const isLightMode = document.body.classList.toggle('dark-mode');
                 document.body.classList.toggle('light-mode');
@@ -1037,18 +1156,26 @@
                 if (document.body.classList.contains('light-mode')) {
                     icon.classList.remove('fa-sun');
                     icon.classList.add('fa-moon');
-                    darkModeToggle.innerHTML = '<i class="fas fa-moon" aria-hidden="true" style="margin-right: 10px;"></i>切换暗黑模式';
+                    darkModeToggle.innerHTML = '<i class="fas fa-moon" aria-hidden="true" style="margin-right: 10px;"></i>夜间模式';
                     localStorage.setItem('theme', 'light');
                 } else {
                     icon.classList.remove('fa-moon');
                     icon.classList.add('fa-sun');
-                    darkModeToggle.innerHTML = '<i class="fas fa-sun" aria-hidden="true" style="margin-right: 10px;"></i>切换亮色模式';
+                    darkModeToggle.innerHTML = '<i class="fas fa-sun" aria-hidden="true" style="margin-right: 10px;"></i>日间模式';
                     localStorage.setItem('theme', 'dark');
                 }
                 
-                floatingMenu.classList.remove('active');
-                menuBtn.setAttribute('aria-expanded', 'false');
-                floatingMenu.setAttribute('aria-hidden', 'true');
+                floatingMenu.style.willChange = 'opacity, transform';
+                
+                requestAnimationFrame(() => {
+                    floatingMenu.classList.remove('active');
+                    menuBtn.setAttribute('aria-expanded', 'false');
+                    floatingMenu.setAttribute('aria-hidden', 'true');
+                    
+                    setTimeout(() => {
+                        floatingMenu.style.willChange = 'auto';
+                    }, 300);
+                });
             });
 
             // 检查本地存储的主题设置
@@ -1058,7 +1185,7 @@
                 const icon = darkModeToggle.querySelector('i');
                 icon.classList.remove('fa-sun');
                 icon.classList.add('fa-moon');
-                darkModeToggle.innerHTML = '<i class="fas fa-moon" aria-hidden="true" style="margin-right: 10px;"></i>切换暗黑模式';
+                darkModeToggle.innerHTML = '<i class="fas fa-moon" aria-hidden="true" style="margin-right: 10px;"></i>夜间模式';
             }
             
             // 优化滚动事件
@@ -1085,9 +1212,17 @@
             // 键盘事件处理
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && floatingMenu.classList.contains('active')) {
-                    floatingMenu.classList.remove('active');
-                    menuBtn.setAttribute('aria-expanded', 'false');
-                    floatingMenu.setAttribute('aria-hidden', 'true');
+                    floatingMenu.style.willChange = 'opacity, transform';
+                    
+                    requestAnimationFrame(() => {
+                        floatingMenu.classList.remove('active');
+                        menuBtn.setAttribute('aria-expanded', 'false');
+                        floatingMenu.setAttribute('aria-hidden', 'true');
+                        
+                        setTimeout(() => {
+                            floatingMenu.style.willChange = 'auto';
+                        }, 300);
+                    });
                 }
                 
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
@@ -1110,20 +1245,19 @@
                 }
             });
             
-            // 计算特殊卡片展开后的高度
-            function calculateSpecialCardHeight() {
-                if (specialCardContent) {
-                    const contentHeight = specialCardContent.scrollHeight;
-                    const headerHeight = specialCardHeader.offsetHeight;
-                    specialCardExpandedHeight = contentHeight + headerHeight + 20;
-                }
-            }
-            
-            // 延迟计算高度
-            setTimeout(calculateSpecialCardHeight, 100);
-            
-            // 窗口大小变化时重新计算
-            window.addEventListener('resize', debounce(calculateSpecialCardHeight, 250));
+            // 添加悬停效果优化
+            const interactiveElements = document.querySelectorAll('.menu-btn, .close-menu, .mobile-card-btn, .special-card-btn, .card-tag, .menu-item');
+            interactiveElements.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    this.style.willChange = 'transform, background-color';
+                });
+                
+                element.addEventListener('mouseleave', function() {
+                    setTimeout(() => {
+                        this.style.willChange = 'auto';
+                    }, 200);
+                });
+            });
         });
    </script>
 </body>
