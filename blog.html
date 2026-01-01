@@ -560,6 +560,105 @@
          contain: layout style;
       }
 
+      /* 添加新的样式：只有内容时的特殊卡片样式 */
+      .special-card.only-content {
+         padding: 0;
+         background: transparent;
+         box-shadow: none;
+         cursor: default;
+         border-radius: 10;
+         height: auto;
+         min-height: 0;
+      }
+
+      .special-card.only-content .special-card-header {
+         display: none;
+      }
+
+      .special-card.only-content .special-card-content {
+         max-height: none;
+         opacity: 1;
+         margin-top: 0;
+         padding: 0;
+         overflow: visible;
+         height: auto;
+         min-height: 0;
+         cursor: auto;
+      }
+
+      .special-card.only-content .special-cards-container {
+         display: block;
+         max-height: none;
+         overflow: visible;
+         gap: 0;
+         height: auto;
+         min-height: 0;
+         padding: 0;
+         margin: 0;
+      }
+
+      .special-card.only-content .special-card-item {
+         background-color: transparent;
+         padding: 0;
+         margin: 0;
+         box-shadow: none;
+         height: auto;
+         min-height: 0;
+         max-height: none;
+         border-radius: 10;
+         cursor: default;
+      }
+
+      .special-card.only-content .special-card-item-content {
+         display: block;
+         height: auto;
+         min-height: 0;
+         max-height: none;
+         overflow: visible;
+         padding: 0;
+         margin: 0;
+      }
+
+      .special-card.only-content .special-card-item-content-main {
+         overflow: visible;
+         max-height: none;
+         height: auto;
+         min-height: 0;
+         padding: 0;
+         margin: 0;
+         color: white;
+         font-size: 16px;
+         line-height: 1.6;
+         opacity: 0.9;
+         font-style: italic;
+         text-align: center;
+         background: transparent;
+         border-radius: 0;
+         cursor: default;
+      }
+
+      .special-card.only-content .card-tags,
+      .special-card.only-content .special-card-item h4,
+      .special-card.only-content .special-card-item-footer {
+         display: none;
+      }
+
+      /* 添加新的样式：卡片内容为纯文本时的样式 */
+      .special-card-item-content-simple {
+         color: white;
+         font-size: 16px;
+         line-height: 1.6;
+         opacity: 0.9;
+         font-style: italic;
+         text-align: center;
+         padding: 20px 15px;
+         background: rgba(255, 255, 255, 0.05);
+         border-radius: 8px;
+         cursor: default;
+         width: 100%;
+         box-sizing: border-box;
+      }
+
       .search-overlay {
          position: fixed;
          top: 0;
@@ -897,12 +996,13 @@
          <div class="mobile-top-section expanded" id="mobileTopSection">
             <div class="mobile-top-bar">
                <div class="avatar" role="img" aria-label="Img">
-                  <img src="avatar.png" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+                  <img src="Url" alt="avatar" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
                </div>
                <div class="mobile-title-container" id="titleToggle" tabindex="0" role="button" aria-label="收起标题">
                   <div class="mobile-title">Ae1autumn</div>
                </div>
-               <button class="menu-btn" id="menuBtn" aria-label="浮动菜单" aria-expanded="false"aria-controls="floatingMenu">≡</button>
+               <button class="menu-btn" id="menuBtn" aria-label="浮动菜单" aria-expanded="false"
+                                                                                                                                       aria-controls="floatingMenu">≡</button>
             </div>
             <div class="mobile-top-card">
                <h2>Welcome</h2>
@@ -953,355 +1053,417 @@
 
    <script>
       // ==================== 常量定义 ====================
-const SEARCH_TYPES = {
-    TITLE: 'title',
-    TAG: 'tag',
-    CONTENT: 'content'
-};
+      const SEARCH_TYPES = {
+          TITLE: 'title',
+          TAG: 'tag',
+          CONTENT: 'content'
+      };
 
-// ==================== 数据与状态管理 ====================
-const blogData = {
-    articles: [
-        {
-            id: 'article-1',
-            title: 'Title',
-            tags: ['Tags'],
-            verticalTitle: 'view-title',
-            date: 'Date',
-            content: [
-               'P1'
-            ],
-            url: 'Url',
-            gradient: ['#e74c3c', '#c0392b']
-        },
-    ],
-    specials: [
-        {
-            id: 'special-1',
-            title: 'Title',
-            tags: ['Tags'],
-            content: [
-               'P1'
-            ],
-            url: 'Url',
-            gradient: ['#e74c3c', '#c0392b']
-        }
-    ]
-};
+      // ==================== 数据与状态管理 ====================
+      const blogData = {
+          articles: [
+              {
+                  id: 'article-1',
+                  title: 'Title',
+                  tags: ['Tags'],
+                  verticalTitle: 'ViewTitle',
+                  date: 'Date',
+                  content: [
+                     'P1'
+                  ],
+                  url: 'Url',
+                  gradient: ['#e74c3c', '#c0392b']
+              },
+          ],
+          specials: [
+              {
+                  id: 'special-1',
+                  title: 'Title',
+                  tags: ['Tags'],
+                  content: [
+                     'P1'
+                  ],
+                  url: 'Url',
+                  gradient: ['#e74c3c', '#c0392b']
+              },
+          ]
+      };
 
-const state = {
-    isSearchMode: false,
-    originalArticles: [...blogData.articles],
-    currentArticles: [],
-    searchType: SEARCH_TYPES.TITLE
-};
+      const state = {
+          isSearchMode: false,
+          originalArticles: [...blogData.articles],
+          currentArticles: [],
+          searchType: SEARCH_TYPES.TITLE
+      };
 
-// ==================== 工具函数 ====================
-function debounce(func, delay) {
-    let timeoutId;
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func.apply(this, args), delay);
-    };
-}
+      // ==================== 工具函数 ====================
+      function debounce(func, delay) {
+          let timeoutId;
+          return (...args) => {
+              clearTimeout(timeoutId);
+              timeoutId = setTimeout(() => func.apply(this, args), delay);
+          };
+      }
 
-function sortArticlesByDateDesc(articles) {
-    return articles.sort((a, b) => new Date(b.date) - new Date(a.date));
-}
+      function sortArticlesByDateDesc(articles) {
+          return articles.sort((a, b) => new Date(b.date) - new Date(a.date));
+      }
 
-function filterArticles(articles, keyword, type) {
-    if (!keyword.trim()) return articles;
-    
-    keyword = keyword.trim().toLowerCase();
-    
-    return articles.filter(article => {
-        if (type === SEARCH_TYPES.TITLE) {
-            return article.title.toLowerCase().includes(keyword);
-        } 
-        else if (type === SEARCH_TYPES.TAG) {
-            const keywords = keyword.split(' ').filter(k => k.trim() !== '');
-            if (keywords.length === 0) return true;
-            return keywords.some(k => 
-                article.tags.some(tag => tag.toLowerCase().includes(k))
-            );
-        } 
-        else if (type === SEARCH_TYPES.CONTENT) {
-            return article.content.some(c => c.toLowerCase().includes(keyword));
-        }
-        return true;
-    });
-}
+      function filterArticles(articles, keyword, type) {
+          if (!keyword.trim()) return articles;
+          
+          keyword = keyword.trim().toLowerCase();
+          
+          return articles.filter(article => {
+              if (type === SEARCH_TYPES.TITLE) {
+                  return article.title.toLowerCase().includes(keyword);
+              } 
+              else if (type === SEARCH_TYPES.TAG) {
+                  const keywords = keyword.split(' ').filter(k => k.trim() !== '');
+                  if (keywords.length === 0) return true;
+                  return keywords.some(k => 
+                      article.tags.some(tag => tag.toLowerCase().includes(k))
+                  );
+              } 
+              else if (type === SEARCH_TYPES.CONTENT) {
+                  return article.content.some(c => c.toLowerCase().includes(keyword));
+              }
+              return true;
+          });
+      }
 
-// ==================== 渲染函数 ====================
-function renderArticles(articles = blogData.articles, isSearchMode = false) {
-    const wrapper = document.getElementById('mobileCardsWrapper');
-    wrapper.innerHTML = '';
+      // 检查是否需要只显示内容模式
+      function shouldShowOnlyContent(special) {
+          // 检查是否只有一个特殊卡片
+          if (blogData.specials.length !== 1) return false;
+          
+          // 检查标题和标签是否为空
+          const hasTitle = special.title && special.title.trim() !== '';
+          const hasTags = special.tags && special.tags.length > 0;
+          
+          // 检查是否有内容
+          const hasContent = special.content && special.content.length > 0;
+          
+          // 如果有内容，但没标题和标签，就显示为只内容模式
+          return hasContent && !hasTitle && !hasTags;
+      }
 
-    if (articles.length === 0) {
-        wrapper.innerHTML = '<div style="color: rgba(255,255,255,0.5); text-align: center; width: 100%; padding: 20px;">没有文章</div>';
-        return;
-    }
+      // ==================== 渲染函数 ====================
+      function renderArticles(articles = blogData.articles, isSearchMode = false) {
+          const wrapper = document.getElementById('mobileCardsWrapper');
+          wrapper.innerHTML = '';
 
-    articles.forEach((article, index) => {
-        const card = document.createElement('article');
-        card.className = 'rectangle-card';
-        card.id = `card${index + 1}`;
-        card.setAttribute('role', 'article');
-        card.setAttribute('aria-labelledby', `card${index + 1}Title`);
+          if (articles.length === 0) {
+              wrapper.innerHTML = '<div style="color: rgba(255,255,255,0.5); text-align: center; width: 100%; padding: 20px;">没有文章</div>';
+              return;
+          }
 
-        card.innerHTML = `
-            <div class="vertical-title">${article.verticalTitle || article.tags[0]}</div>
-            <div class="card-content-expanded">
-                <div class="card-tags">
-                    ${article.date ? `<span class="card-tag date-tag">${article.date}</span>` : ''}
-                    ${article.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
-                </div>
-                <div class="card-title-container">
-                    <h2 id="card${index + 1}Title">${article.title}</h2>
-                </div>
-                <div class="card-content-main">
-                    ${article.content.map(p => `<p>${p}</p>`).join('')}
-                </div>
-                <div class="card-footer">
-                    <button class="mobile-card-btn" onclick="window.open('${article.url}', '_blank')">Read</button>
-                </div>
-            </div>
-        `;
+          articles.forEach((article, index) => {
+              const card = document.createElement('article');
+              card.className = 'rectangle-card';
+              card.id = `card${index + 1}`;
+              card.setAttribute('role', 'article');
+              card.setAttribute('aria-labelledby', `card${index + 1}Title`);
 
-        // 根据模式决定默认展开哪个卡片
-        if ((!isSearchMode && index === 1) || (isSearchMode && index === 0)) {
-            setTimeout(() => {
-                card.classList.add('active');
-            }, 100);
-        }
+              card.innerHTML = `
+                  <div class="vertical-title">${article.verticalTitle || article.tags[0]}</div>
+                  <div class="card-content-expanded">
+                      <div class="card-tags">
+                          ${article.date ? `<span class="card-tag date-tag">${article.date}</span>` : ''}
+                          ${article.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
+                      </div>
+                      <div class="card-title-container">
+                          <h2 id="card${index + 1}Title">${article.title}</h2>
+                      </div>
+                      <div class="card-content-main">
+                          ${article.content.map(p => `<p>${p}</p>`).join('')}
+                      </div>
+                      <div class="card-footer">
+                          <button class="mobile-card-btn" onclick="window.open('${article.url}',
+                          '_blank')">Read</button>
+                      </div>
+                  </div>
+              `;
 
-        card.addEventListener('click', (e) => {
-            if (e.target.closest('.mobile-card-btn')) return;
-            card.classList.toggle('active');
-            document.querySelectorAll('.rectangle-card').forEach(c => {
-                if (c !== card) c.classList.remove('active');
-            });
-        });
+              // 根据模式决定默认展开哪个卡片
+              if ((!isSearchMode && index === 1) || (isSearchMode && index === 0)) {
+                  setTimeout(() => {
+                      card.classList.add('active');
+                  }, 100);
+              }
 
-        wrapper.appendChild(card);
-    });
-}
+              card.addEventListener('click', (e) => {
+                  if (e.target.closest('.mobile-card-btn')) return;
+                  card.classList.toggle('active');
+                  document.querySelectorAll('.rectangle-card').forEach(c => {
+                      if (c !== card) c.classList.remove('active');
+                  });
+              });
 
-function renderSpecialCards() {
-    const container = document.getElementById('specialCardsContainer');
-    container.innerHTML = '';
+              wrapper.appendChild(card);
+          });
+      }
 
-    blogData.specials.forEach(special => {
-        const item = document.createElement('div');
-        item.className = 'special-card-item';
+      function renderSpecialCards() {
+          const container = document.getElementById('specialCardsContainer');
+          container.innerHTML = '';
+          const specialCard = document.getElementById('specialCard');
 
-        item.innerHTML = `
-            <div class="special-card-item-content">
-                <div class="card-tags">
-                    ${special.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
-                </div>
-                <h4>${special.title}</h4>
-                <div class="special-card-item-content-main">
-                    ${special.content.map(p => `<p>${p}</p>`).join('')}
-                </div>
-                <div class="special-card-item-footer">
-                    <button class="special-card-btn" onclick="window.open('${special.url}', '_blank')">Visit</button>
-                </div>
-            </div>
-        `;
+          // 检查是否需要只显示内容模式
+          if (blogData.specials.length === 1 && shouldShowOnlyContent(blogData.specials[0])) {
+              // 只显示内容模式
+              const special = blogData.specials[0];
+              
+              // 添加只显示内容的类
+              specialCard.classList.add('only-content');
+              // 设置标题为不可点击
+              document.querySelector('.special-card-header').style.cursor = 'default';
+              // 默认展开内容区域
+              specialCard.classList.add('expanded');
+              specialCard.setAttribute('aria-expanded', 'true');
+              
+              const item = document.createElement('div');
+              item.className = 'special-card-item-content-simple';
+              
+              // 只显示内容，不显示标题、标签和按钮
+              item.innerHTML = `
+                  <p>${special.content.map(p => `<p>${p}</p>`).join('')}</p>
+              `;
+              
+              container.appendChild(item);
+          } else {
+              // 正常模式
+              specialCard.classList.remove('only-content');
+              document.querySelector('.special-card-header').style.cursor = 'pointer';
+              
+              blogData.specials.forEach(special => {
+                  const item = document.createElement('div');
+                  item.className = 'special-card-item';
 
-        container.appendChild(item);
-    });
-}
+                  item.innerHTML = `
+                      <div class="special-card-item-content">
+                          ${special.tags.length > 0 ? `
+                          <div class="card-tags">
+                              ${special.tags.map(tag => `<span class="card-tag">${tag}</span>`).join('')}
+                          </div>
+                          ` : ''}
+                          ${special.title ? `<h4>${special.title}</h4>` : ''}
+                          <div class="special-card-item-content-main">
+                              ${special.content.map(p => `<p>${p}</p>`).join('')}
+                          </div>
+                          ${special.url ? `
+                          <div class="special-card-item-footer">
+                              <button class="special-card-btn"
+                              onclick="window.open('${special.url}', '_blank')">Visit</button>
+                          </div>
+                          ` : ''}
+                      </div>
+                  `;
 
-// ==================== 搜索功能 ====================
-function enterSearchMode(filteredArticles) {
-    state.isSearchMode = true;
-    state.currentArticles = filteredArticles;
-    const sortedArticles = sortArticlesByDateDesc([...filteredArticles]);
-    renderArticles(sortedArticles, true);
-    closeSearchOverlay();
-}
+                  container.appendChild(item);
+              });
+          }
+      }
 
-function exitSearchMode() {
-    state.isSearchMode = false;
-    state.currentArticles = [];
-    const originalSorted = sortArticlesByDateDesc([...blogData.articles]);
-    renderArticles(originalSorted, false);
-    closeSearchOverlay();
-}
+      // ==================== 搜索功能 ====================
+      function enterSearchMode(filteredArticles) {
+          state.isSearchMode = true;
+          state.currentArticles = filteredArticles;
+          const sortedArticles = sortArticlesByDateDesc([...filteredArticles]);
+          renderArticles(sortedArticles, true);
+          closeSearchOverlay();
+      }
 
-function performSearch() {
-    const input = document.getElementById('searchInput');
-    const keyword = input.value.trim();
-    const searchType = state.searchType;
+      function exitSearchMode() {
+          state.isSearchMode = false;
+          state.currentArticles = [];
+          const originalSorted = sortArticlesByDateDesc([...blogData.articles]);
+          renderArticles(originalSorted, false);
+          closeSearchOverlay();
+      }
 
-    if (!keyword) {
-        showSearchError('未输入');
-        return;
-    }
+      function performSearch() {
+          const input = document.getElementById('searchInput');
+          const keyword = input.value.trim();
+          const searchType = state.searchType;
 
-    let filtered = filterArticles(blogData.articles, keyword, searchType);
-    
-    if (filtered.length === 0) {
-        showSearchError(`没有符合"${keyword}"的文章`);
-        return;
-    }
+          if (!keyword) {
+              showSearchError('未输入');
+              return;
+          }
 
-    enterSearchMode(filtered);
-}
+          let filtered = filterArticles(blogData.articles, keyword, searchType);
+          
+          if (filtered.length === 0) {
+              showSearchError(`没有符合"${keyword}"的文章`);
+              return;
+          }
 
-function showSearchError(message) {
-    const input = document.getElementById('searchInput');
-    input.value = '';
-    input.placeholder = message;
-    input.classList.add('error');
-    
-    const restoreOnNextInput = () => {
-        input.classList.remove('error');
-        input.placeholder = 'Enter确认,点击标题退出';
-        input.removeEventListener('input', restoreOnNextInput);
-    };
-    
-    input.addEventListener('input', restoreOnNextInput);
-}
+          enterSearchMode(filtered);
+      }
 
-// ==================== UI 交互控制 ====================
-function openSearchOverlay() {
-    const overlay = document.getElementById('searchOverlay');
-    const input = document.getElementById('searchInput');
+      function showSearchError(message) {
+          const input = document.getElementById('searchInput');
+          input.value = '';
+          input.placeholder = message;
+          input.classList.add('error');
+          
+          const restoreOnNextInput = () => {
+              input.classList.remove('error');
+              input.placeholder = 'Enter确认,点击标题退出';
+              input.removeEventListener('input', restoreOnNextInput);
+          };
+          
+          input.addEventListener('input', restoreOnNextInput);
+      }
 
-    input.value = '';
-    input.placeholder = 'Enter确认,点击标题退出';
-    input.classList.remove('error');
+      // ==================== UI 交互控制 ====================
+      function openSearchOverlay() {
+          const overlay = document.getElementById('searchOverlay');
+          const input = document.getElementById('searchInput');
 
-    overlay.classList.add('active');
-    input.focus();
-}
+          input.value = '';
+          input.placeholder = 'Enter确认,点击标题退出';
+          input.classList.remove('error');
 
-function closeSearchOverlay() {
-    document.getElementById('searchOverlay').classList.remove('active');
-}
+          overlay.classList.add('active');
+          input.focus();
+      }
 
-function openFloatingMenu() {
-    document.getElementById('floatingMenu').classList.add('active');
-    document.getElementById('menuBtn').setAttribute('aria-expanded', 'true');
-    document.getElementById('floatingMenu').setAttribute('aria-hidden', 'false');
-}
+      function closeSearchOverlay() {
+          document.getElementById('searchOverlay').classList.remove('active');
+      }
 
-function closeFloatingMenu() {
-    document.getElementById('floatingMenu').classList.remove('active');
-    document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
-    document.getElementById('floatingMenu').setAttribute('aria-hidden', 'true');
-}
+      function openFloatingMenu() {
+          document.getElementById('floatingMenu').classList.add('active');
+          document.getElementById('menuBtn').setAttribute('aria-expanded', 'true');
+          document.getElementById('floatingMenu').setAttribute('aria-hidden', 'false');
+      }
 
-function toggleFloatingMenu() {
-    const menu = document.getElementById('floatingMenu');
-    const btn = document.getElementById('menuBtn');
-    
-    if (menu.classList.contains('active')) {
-        closeFloatingMenu();
-    } else {
-        openFloatingMenu();
-    }
-}
+      function closeFloatingMenu() {
+          document.getElementById('floatingMenu').classList.remove('active');
+          document.getElementById('menuBtn').setAttribute('aria-expanded', 'false');
+          document.getElementById('floatingMenu').setAttribute('aria-hidden', 'true');
+      }
 
-function toggleTheme() {
-    const body = document.body;
-    const btn = document.getElementById('darkModeToggle');
-    const icon = btn.querySelector('i');
+      function toggleFloatingMenu() {
+          const menu = document.getElementById('floatingMenu');
+          const btn = document.getElementById('menuBtn');
+          
+          if (menu.classList.contains('active')) {
+              closeFloatingMenu();
+          } else {
+              openFloatingMenu();
+          }
+      }
 
-    body.classList.toggle('dark-mode');
-    body.classList.toggle('light-mode');
+      function toggleTheme() {
+          const body = document.body;
+          const btn = document.getElementById('darkModeToggle');
+          const icon = btn.querySelector('i');
 
-    if (body.classList.contains('light-mode')) {
-        btn.innerHTML = '夜间模式';
-        localStorage.setItem('theme', 'light');
-    } else {
-        btn.innerHTML = '日间模式';
-        localStorage.setItem('theme', 'dark');
-    }
+          body.classList.toggle('dark-mode');
+          body.classList.toggle('light-mode');
 
-    closeFloatingMenu();
-}
+          if (body.classList.contains('light-mode')) {
+              btn.innerHTML = '夜间模式';
+              localStorage.setItem('theme', 'light');
+          } else {
+              btn.innerHTML = '日间模式';
+              localStorage.setItem('theme', 'dark');
+          }
 
-// ==================== 事件绑定 ====================
-function bindEvents() {
-    document.getElementById('searchMenuItem').addEventListener('click', () => {
-        openSearchOverlay();
-        closeFloatingMenu();
-    });
+          closeFloatingMenu();
+      }
 
-    document.getElementById('menuBtn').addEventListener('click', toggleFloatingMenu);
+      // ==================== 事件绑定 ====================
+      function bindEvents() {
+          document.getElementById('searchMenuItem').addEventListener('click', () => {
+              openSearchOverlay();
+              closeFloatingMenu();
+          });
 
-    document.getElementById('searchInput').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') performSearch();
-    });
+          document.getElementById('menuBtn').addEventListener('click', toggleFloatingMenu);
 
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            const overlay = document.getElementById('searchOverlay');
-            if (overlay.classList.contains('active')) {
-                closeSearchOverlay();
-            }
-            const floatingMenu = document.getElementById('floatingMenu');
-            if (floatingMenu.classList.contains('active')) {
-                closeFloatingMenu();
-            }
-        }
-    });
+          document.getElementById('searchInput').addEventListener('keypress', (e) => {
+              if (e.key === 'Enter') performSearch();
+          });
 
-    document.querySelectorAll('#searchOptions .search-option').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('#searchOptions .search-option').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            state.searchType = btn.dataset.type;
-        });
-    });
+          document.addEventListener('keydown', (e) => {
+              if (e.key === 'Escape') {
+                  const overlay = document.getElementById('searchOverlay');
+                  if (overlay.classList.contains('active')) {
+                      closeSearchOverlay();
+                  }
+                  const floatingMenu = document.getElementById('floatingMenu');
+                  if (floatingMenu.classList.contains('active')) {
+                      closeFloatingMenu();
+                  }
+              }
+          });
 
-    document.getElementById('searchOverlay').addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) closeSearchOverlay();
-    });
+          document.querySelectorAll('#searchOptions .search-option').forEach(btn => {
+              btn.addEventListener('click', () => {
+                  document.querySelectorAll('#searchOptions .search-option').forEach(b => b.classList.remove('active'));
+                  btn.classList.add('active');
+                  state.searchType = btn.dataset.type;
+              });
+          });
 
-    document.addEventListener('click', (e) => {
-        const menu = document.getElementById('floatingMenu');
-        const btn = document.getElementById('menuBtn');
-        if (!menu.contains(e.target) && !btn.contains(e.target) && menu.classList.contains('active')) {
-            closeFloatingMenu();
-        }
-    });
+          document.getElementById('searchOverlay').addEventListener('click', (e) => {
+              if (e.target === e.currentTarget) closeSearchOverlay();
+          });
 
-    document.getElementById('darkModeToggle').addEventListener('click', toggleTheme);
+          document.addEventListener('click', (e) => {
+              const menu = document.getElementById('floatingMenu');
+              const btn = document.getElementById('menuBtn');
+              if (!menu.contains(e.target) && !btn.contains(e.target) && menu.classList.contains('active')) {
+                  closeFloatingMenu();
+              }
+          });
 
-    document.getElementById('titleToggle').addEventListener('click', () => {
-        if (state.isSearchMode) {
-            exitSearchMode();
-        } else {
-            const topSection = document.getElementById('mobileTopSection');
-            topSection.classList.toggle('expanded');
-            topSection.classList.toggle('collapsed');
-        }
-    });
+          document.getElementById('darkModeToggle').addEventListener('click', toggleTheme);
 
-    document.querySelector('.special-card-header').addEventListener('click', (e) => {
-        e.stopPropagation();
-        const card = document.getElementById('specialCard');
-        card.classList.toggle('expanded');
-        card.setAttribute('aria-expanded', card.classList.contains('expanded'));
-    });
-}
+          document.getElementById('titleToggle').addEventListener('click', () => {
+              if (state.isSearchMode) {
+                  exitSearchMode();
+              } else {
+                  const topSection = document.getElementById('mobileTopSection');
+                  topSection.classList.toggle('expanded');
+                  topSection.classList.toggle('collapsed');
+              }
+          });
 
-// ==================== 页面初始化 ====================
-document.addEventListener('DOMContentLoaded', () => {
-    state.originalArticles = [...blogData.articles];
-    state.currentArticles = blogData.articles;
+          // 特殊卡片点击事件
+          const specialCardHeader = document.querySelector('.special-card-header');
+          if (specialCardHeader) {
+              specialCardHeader.addEventListener('click', (e) => {
+                  // 如果只有内容模式，则不展开/折叠
+                  if (blogData.specials.length === 1 && shouldShowOnlyContent(blogData.specials[0])) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      return false;
+                  }
+                  
+                  e.stopPropagation();
+                  const card = document.getElementById('specialCard');
+                  card.classList.toggle('expanded');
+                  card.setAttribute('aria-expanded', card.classList.contains('expanded'));
+              });
+          }
+      }
 
-    const sortedArticles = sortArticlesByDateDesc([...blogData.articles]);
-    renderArticles(sortedArticles, false);
-    renderSpecialCards();
+      // ==================== 页面初始化 ====================
+      document.addEventListener('DOMContentLoaded', () => {
+          state.originalArticles = [...blogData.articles];
+          state.currentArticles = blogData.articles;
 
-    bindEvents();
-});
+          const sortedArticles = sortArticlesByDateDesc([...blogData.articles]);
+          renderArticles(sortedArticles, false);
+          renderSpecialCards();
+
+          bindEvents();
+      });
 
    </script>
 
