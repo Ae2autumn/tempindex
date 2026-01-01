@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>JavaScript 高级编程指南 - 优化版</title>
+   <style>
+      * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+      }
+
+      body {
+         background-color: #000;
+         color: #fff;
+         font-family: Arial, sans-serif;
+         line-height: 1.6;
+         padding: 20px;
+         max-width: 1000px;
+         margin: 0 auto;
+         position: relative;
+         min-height: 200vh;
+      }
+
+      .header {
+         margin-bottom: 30px;
+         padding: 20px;
+         border-bottom: 1px solid #333;
+      }
+
+      .title {
+         font-size: 2.5rem;
+         margin-bottom: 10px;
+         color: #fff;
+      }
+
+      .summary {
+         font-size: 1.1rem;
+         margin-bottom: 15px;
+         color: #ccc;
+      }
+
+      .date {
+         color: #999;
+         font-size: 0.9rem;
+         margin-bottom: 10px;
+      }
+
+      .tags {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 10px;
+         margin-bottom: 20px;
+      }
+
+      .tag {
+         background-color: #333;
+         color: #fff;
+         padding: 5px 10px;
+         border-radius: 3px;
+         font-size: 0.9rem;
+      }
+
+      .content {
+         padding: 20px;
+         margin-bottom: 50px;
+      }
+
+      .content p {
+         margin-bottom: 20px;
+      }
+
+      .content strong {
+         color: #f00;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+         margin: 30px 0 15px;
+         padding-bottom: 10px;
+         border-bottom: 1px solid #333;
+      }
+
+      .comments {
+         margin-top: 50px;
+         padding: 20px;
+         border-top: 1px solid #333;
+      }
+
+      /* 浮动按钮优化 */
+      .floating-btn {
+         position: fixed;
+         bottom: 30px;
+         right: 30px;
+         width: 60px;
+         height: 60px;
+         background-color: #000;
+         color: #fff;
+         border-radius: 50%;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         cursor: pointer;
+         font-size: 24px;
+         z-index: 1000;
+         box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+         border: none;
+         outline: none;
+         transition: background-color 0.3s ease;
+      }
+
+      /* 侧边菜单优化 */
+      .side-menu {
+         position: fixed;
+         bottom: 30px;
+         right: 30px;
+         width: 250px;
+         height: 400px;
+         background-color: #111;
+         border: 1px solid #333;
+         border-radius: 8px;
+         display: none;
+         flex-direction: row;
+         z-index: 999;
+         overflow: hidden;
+         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+         transform-origin: bottom right;
+      }
+
+      .side-menu.active {
+         display: flex;
+         animation: menuAppear 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      }
+
+      @keyframes menuAppear {
+         0% {
+            transform: scale(0.1);
+            opacity: 0;
+         }
+
+         100% {
+            transform: scale(1);
+            opacity: 1;
+         }
+      }
+
+      .menu-left {
+         width: 360px;
+         padding: 20px;
+         overflow-y: auto;
+         scrollbar-width: none;
+      }
+
+      .menu-left::-webkit-scrollbar {
+         display: none;
+      }
+
+      .chapter-item {
+         padding: 10px 0;
+         border-bottom: 1px solid #222;
+         cursor: pointer;
+         color: #ccc;
+         transition: all 0.2s;
+      }
+
+      .chapter-item.h1-item {
+         padding-left: 0;
+      }
+
+      .chapter-item.h2-item {
+         padding-left: 20px;
+         color: #888;
+         font-size: 0.9em;
+      }
+
+      .chapter-item:hover {
+         color: #f00;
+      }
+
+      .chapter-item.h1-item:hover {
+         padding-left: 5px;
+      }
+
+      .chapter-item.h2-item:hover {
+         padding-left: 25px;
+      }
+
+      .menu-right {
+         width: 50px;
+         height: 100%;
+         display: flex;
+         flex-direction: column;
+         background-color: #222;
+      }
+
+      .menu-buttons {
+         flex: 1;
+         /* 占据所有可用空间 */
+         display: flex;
+         flex-direction: column;
+         justify-content: space-between;
+         /* 上下按钮贴边，中间按钮居中 */
+         align-items: center;
+         padding: 20px 0;
+         /* 上下添加一些内边距 */
+         width: 100%;
+         margin-left: 1px;
+      }
+
+      .menu-btn {
+         color: #fff;
+         background: none;
+         border: none;
+         padding: 12px;
+         cursor: pointer;
+         transition: all 0.2s;
+         font-size: 16px;
+         width: 60px;
+         height: 60px;
+         text-align: center;
+         border-radius: 5px;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+      }
+
+      .menu-btn:hover {
+         color: #f00;
+         background-color: rgba(255, 0, 0, 0.1);
+      }
+
+      .close-btn {
+         height: 50px;
+         background-color: #222;
+         color: #fff;
+         border: none;
+         border-top: 1px solid #333;
+         cursor: pointer;
+         font-size: 16px;
+         transition: background-color 0.2s;
+         width: 100%;
+         margin-left: 1px;
+      }
+
+      .close-btn:hover {
+         background-color: #d00;
+      }
+
+      .menu-mask {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-color: rgba(0, 0, 0, 0.5);
+         z-index: 998;
+         display: none;
+      }
+
+      .menu-mask.active {
+         display: block;
+      }
+   </style>
+</head>
+
+<body>
+   <div class="header">
+      <h1 class="title">Title</h1>
+      <p class="summary">Summary</p>
+      <div class="date">Date</div>
+      <div class="tags">
+         <span class="tag">Tags</span>
+      </div>
+   </div>
+
+   <div class="content">
+
+   </div>
+
+   <div class="comments">
+      <script src="https://utteranc.es/client.js" repo="username/repository" issue-term="pathname" theme="github-dark" crossorigin="anonymous" async>
+      </script>
+   </div>
+
+   <button class="floating-btn" id="menuToggle">☰</button>
+
+   <div class="menu-mask" id="menuMask"></div>
+
+   <div class="side-menu" id="sideMenu">
+      <div class="menu-left" id="chapterList">
+      </div>
+
+      <div class="menu-right">
+         <div class="menu-buttons">
+            <button class="menu-btn" id="toBottomBtn">▼</button>
+            <button class="menu-btn" id="middleBtn">◎</button>
+            <button class="menu-btn" id="toTopBtn">▲</button>
+         </div>
+         <button class="close-btn" id="closeBtn">╳</button>
+      </div>
+   </div>
+
+   <script>
+      const menuToggle = document.getElementById('menuToggle');
+        const sideMenu = document.getElementById('sideMenu');
+        const menuMask = document.getElementById('menuMask');
+        const closeBtn = document.getElementById('closeBtn');
+        const toBottomBtn = document.getElementById('toBottomBtn');
+        const middleBtn = document.getElementById('middleBtn');
+        const toTopBtn = document.getElementById('toTopBtn');
+        const chapterList = document.getElementById('chapterList');
+        
+        // 获取所有h1和h2标签，但排除第一个h1（文章标题）
+        const h1Elements = Array.from(document.querySelectorAll('h1')).slice(1);
+        const h2Elements = Array.from(document.querySelectorAll('h2'));
+        
+        // 合并并排序章节
+        const allHeadings = [...h1Elements, ...h2Elements].sort((a, b) => {
+            return a.offsetTop - b.offsetTop;
+        });
+        
+        allHeadings.forEach((heading) => {
+            const listItem = document.createElement('div');
+            const isH2 = heading.tagName === 'H2';
+            
+            listItem.className = isH2 ? 'chapter-item h2-item' : 'chapter-item h1-item';
+            listItem.textContent = heading.textContent;
+            listItem.dataset.id = heading.id;
+            
+            listItem.addEventListener('click', () => {
+                heading.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                closeMenu();
+            });
+            
+            chapterList.appendChild(listItem);
+        });
+        
+        menuToggle.addEventListener('click', () => {
+            sideMenu.classList.add('active');
+            menuMask.classList.add('active');
+            menuToggle.style.display = 'none';
+        });
+        
+        function closeMenu() {
+            sideMenu.classList.remove('active');
+            menuMask.classList.remove('active');
+            menuToggle.style.display = 'flex';
+        }
+        
+        closeBtn.addEventListener('click', closeMenu);
+        menuMask.addEventListener('click', closeMenu);
+        
+        toBottomBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+            closeMenu();
+        });
+        
+        middleBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: document.body.scrollHeight / 2,
+                behavior: 'smooth'
+            });
+            closeMenu();
+        });
+        
+        toTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+            closeMenu();
+        });
+        
+        // 更新按钮背景颜色基于滚动进度
+        function updateProgress() {
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPosition = window.scrollY;
+            const scrollPercent = Math.min(scrollPosition / scrollHeight, 1);
+            
+            // 计算颜色值：从黑色(#000000)过渡到红色(#ff0000)
+            const redValue = Math.floor(scrollPercent * 255);
+            const color = `rgb(${redValue}, 0, 0)`;
+            
+            // 设置按钮背景色
+            menuToggle.style.backgroundColor = color;
+            
+            // 更新阴影颜色
+            menuToggle.style.boxShadow = `0 4px 12px rgba(${redValue}, 0, 0, 0.3)`;
+        }
+        
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        window.addEventListener('resize', updateProgress, { passive: true });
+        
+        // 初始更新
+        updateProgress();
+   </script>
+</body>
+
+</html>
